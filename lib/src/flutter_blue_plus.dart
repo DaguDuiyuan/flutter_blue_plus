@@ -408,10 +408,25 @@ class FlutterBluePlus {
     // check android
     if (Platform.isAndroid == false) {
       throw FlutterBluePlusException(
-          ErrorPlatform.fbp, "getPhySupport", FbpErrorCode.androidOnly.index, "android-only");
+          ErrorPlatform.fbp, "getPhySupport", FbpErrorCode.androidOnly.index,
+          "android-only");
     }
 
-    return await _invokeMethod('getPhySupport').then((args) => PhySupport.fromMap(args));
+    return await _invokeMethod('getPhySupport').then((args) =>
+        PhySupport.fromMap(args));
+  }
+
+  static Future<Uint8List> starMaxSender(String type) async {
+    var res = await _invokeMethod('getStarMaxMessage', {'type': type});
+    return res;
+  }
+
+  static Future<Uint8List> starMaxSenderArgs(data) async {
+    if (!data.containsKey('type')){
+      throw Exception('必须包含type字段');
+    }
+    var res = await _invokeMethod('getStarMaxMessage', data);
+    return res;
   }
 
   static Future<dynamic> _initFlutterBluePlus() async {

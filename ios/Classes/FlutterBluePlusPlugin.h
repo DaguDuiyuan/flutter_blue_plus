@@ -9,6 +9,9 @@
 #endif
 #import <CoreBluetooth/CoreBluetooth.h>
 
+#import <RunmefitSDK/RunmefitSDK.h>
+#import <RunmefitSDK/STBlueToothSender.h>
+
 #define NAMESPACE @"flutter_blue_plus"
 
 @interface FlutterBluePlusPlugin : NSObject<FlutterPlugin, CBCentralManagerDelegate, CBPeripheralDelegate>

@@ -105,7 +105,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
     @try
     {
         Log(LDEBUG, @"handleMethodCall: %@", call.method);
-
+        
         if ([@"setLogLevel" isEqualToString:call.method])
         {
             NSNumber *idx = [call arguments];
@@ -113,7 +113,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             result(@YES);
             return;
         }
-
+        
         if ([@"setOptions" isEqualToString:call.method])
         {
             NSDictionary *args = (NSDictionary*) call.arguments;
@@ -122,41 +122,41 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             result(@YES);
             return;
         }
-
+        
         // initialize adapter
         if (self.centralManager == nil)
         {
             Log(LDEBUG, @"initializing CBCentralManager");
-
+            
             NSMutableDictionary *options = [NSMutableDictionary dictionary];
-
+            
             if ([self.showPowerAlert boolValue]) {
                 options[CBCentralManagerOptionShowPowerAlertKey] = self.showPowerAlert;
             }
-
+            
             if ([self.restoreState boolValue]) {
                 options[CBCentralManagerOptionRestoreIdentifierKey] = @"flutterBluePlusRestoreIdentifier";
             }
-
+            
             Log(LDEBUG, @"showPowerAlert: %@", [self.showPowerAlert boolValue] ? @"yes" : @"no");
             Log(LDEBUG, @"restoreState: %@", [self.restoreState boolValue] ? @"yes" : @"no");
-
+            
             self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:options];
         }
         // initialize timer
         if (self.checkForMtuChangesTimer == nil)
         {
             Log(LDEBUG, @"initializing checkForMtuChangesTimer");
-
+            
             self.checkForMtuChangesTimer = [NSTimer scheduledTimerWithTimeInterval:0.025
-                target:self
-                selector:@selector(checkForMtuChangesCallback) 
-                userInfo:@{}
-                repeats:YES];
+                                                                            target:self
+                                                                          selector:@selector(checkForMtuChangesCallback)
+                                                                          userInfo:@{}
+                                                                           repeats:YES];
         }
-        // check that we have an adapter, except for the 
+        // check that we have an adapter, except for the
         // functions that don't need it
-        if (self.centralManager == nil && 
+        if (self.centralManager == nil &&
             [@"flutterRestart" isEqualToString:call.method] == false &&
             [@"connectedCount" isEqualToString:call.method] == false &&
             [@"setLogLevel" isEqualToString:call.method] == false &&
@@ -167,7 +167,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             result([FlutterError errorWithCode:@"bluetoothUnavailable" message:s details:NULL]);
             return;
         }
-
+        
         if ([@"flutterRestart" isEqualToString:call.method])
         {
             // no adapter?
@@ -175,17 +175,17 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result(@(0)); // no work to do
                 return;
             }
-
+            
             if ([self isAdapterOn]) {
                 [self.centralManager stopScan];
             }
-
+            
             // all dart state is reset after flutter restart
             // (i.e. Hot Restart) so also reset native state
             [self disconnectAllDevices:@"flutterRestart"];
-
+            
             Log(LDEBUG, @"connectedPeripherals: %lu", self.connectedPeripherals.count);
-
+            
             if (self.connectedPeripherals.count == 0) {
                 [self.knownPeripherals removeAllObjects];
             }
@@ -209,39 +209,39 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         }
         else if ([@"getAdapterName" isEqualToString:call.method])
         {
-    #if TARGET_OS_IOS
+#if TARGET_OS_IOS
             result([[UIDevice currentDevice] name]);
-    #else // MacOS
+#else // MacOS
             // TODO: support this via hostname?
             result(@"Mac Bluetooth Adapter");
-    #endif
+#endif
         }
         if ([@"getAdapterState" isEqualToString:call.method])
         {
             // get state
             int adapterState = 0; // BmAdapterStateEnum.unknown
             if (self.centralManager) {
-                adapterState = [self bmAdapterStateEnum:self.centralManager.state];    
+                adapterState = [self bmAdapterStateEnum:self.centralManager.state];
             }
-
+            
             // See BmBluetoothAdapterState
             NSDictionary* response = @{
                 @"adapter_state" : @(adapterState),
             };
-
+            
             result(response);
         }
         else if([@"turnOn" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"turnOn" 
-                                    message:@"iOS does not support turning on bluetooth"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"turnOn"
+                                       message:@"iOS does not support turning on bluetooth"
+                                       details:NULL]);
         }
         else if([@"turnOff" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"turnOff" 
-                                    message:@"iOS does not support turning off bluetooth"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"turnOff"
+                                       message:@"iOS does not support turning off bluetooth"
+                                       details:NULL]);
         }
         else if ([@"startScan" isEqualToString:call.method])
         {
@@ -249,7 +249,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSDictionary *args = (NSDictionary*) call.arguments;
             NSArray   *withServices    = args[@"with_services"];
             NSNumber  *continuousUpdates = args[@"continuous_updates"];
-
+            
             // check adapter state
             if ([self isAdapterOn] == false) {
                 NSString* as = [self cbManagerStateString:self.centralManager.state];
@@ -257,31 +257,31 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"startScan" message:s details:NULL]);
                 return;
             }
-
+            
             // remember this for later
             self.scanFilters = args;
-
+            
             // allowDuplicates?
             NSMutableDictionary<NSString *, id> *scanOpts = [NSMutableDictionary new];
             if ([continuousUpdates boolValue]) {
                 [scanOpts setObject:[NSNumber numberWithBool:YES] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
             }
-
+            
             // filters implemented by FBP, not the OS
             BOOL hasCustomFilters =
-                [self hasFilter:@"with_remote_ids"] ||
-                [self hasFilter:@"with_names"] ||
-                [self hasFilter:@"with_keywords"] ||
-                [self hasFilter:@"with_msd"] ||
-                [self hasFilter:@"with_service_data"];
-
+            [self hasFilter:@"with_remote_ids"] ||
+            [self hasFilter:@"with_names"] ||
+            [self hasFilter:@"with_keywords"] ||
+            [self hasFilter:@"with_msd"] ||
+            [self hasFilter:@"with_service_data"];
+            
             // filter services
             NSArray *services = [NSArray array];
             for (int i = 0; i < [withServices count]; i++) {
                 NSString *uuid = withServices[i];
                 services = [services arrayByAddingObject:[CBUUID UUIDWithString:uuid]];
             }
-
+            
             // If any custom filter is set then we cannot filter by services.
             // Why? An advertisement can match either the service filter *or*
             // the custom filter. It does not have to match both. So we cannot have
@@ -289,13 +289,13 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             if (hasCustomFilters) {
                 services = [NSArray array];
             }
-
+            
             // clear counts
             [self.scanCounts removeAllObjects];
-
+            
             // start scanning
             [self.centralManager scanForPeripheralsWithServices:services options:scanOpts];
-
+            
             result(@YES);
         }
         else if ([@"stopScan" isEqualToString:call.method])
@@ -310,21 +310,21 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             for (NSString *uuid in args[@"with_services"]) {
                 [withServices addObject:[CBUUID UUIDWithString:uuid]];
             }
-
+            
             // this returns devices connected by *any* app
             NSArray *periphs = [self.centralManager retrieveConnectedPeripheralsWithServices:withServices];
-
+            
             // Devices
             NSMutableArray *deviceProtos = [NSMutableArray new];
             for (CBPeripheral *p in periphs) {
                 [deviceProtos addObject:[self bmBluetoothDevice:p]];
             }
-
+            
             // See BmDevicesList
             NSDictionary* response = @{
                 @"devices": deviceProtos,
             };
-
+            
             result(response);
         }
         else if ([@"connect" isEqualToString:call.method])
@@ -333,7 +333,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSDictionary* args = (NSDictionary*)call.arguments;
             NSString  *remoteId       = args[@"remote_id"];
             NSNumber  *autoConnect    = args[@"auto_connect"];
-
+            
             // check adapter state
             if ([self isAdapterOn] == false) {
                 NSString* as = [self cbManagerStateString:self.centralManager.state];
@@ -341,21 +341,21 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"connect" message:s details:NULL]);
                 return;
             }
-
+            
             // already connecting?
             if ([self.currentlyConnectingPeripherals objectForKey:remoteId] != nil) {
                 Log(LDEBUG, @"already connecting");
                 result(@YES); // still work to do
                 return;
             }
-
+            
             // already connected?
             if ([self getConnectedPeripheral:remoteId] != nil) {
                 Log(LDEBUG, @"already connected");
                 result(@NO); // no work to do
                 return;
             }
-
+            
             // parse
             NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:remoteId];
             if (uuid == nil)
@@ -363,7 +363,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"connect" message:@"invalid remoteId" details:remoteId]);
                 return;
             }
-
+            
             // check the devices iOS knowns about
             CBPeripheral *peripheral = nil;
             for (CBPeripheral *p in [self.centralManager retrievePeripheralsWithIdentifiers:@[uuid]])
@@ -379,24 +379,24 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"connect" message:@"Peripheral not found" details:remoteId]);
                 return;
             }
-
+            
             // we must keep a strong reference to any CBPeripheral before we connect to it.
             // Why? CoreBluetooth does not keep strong references and will warn about API MISUSE and weak ptrs.
             [self.knownPeripherals setObject:peripheral forKey:remoteId];
-
+            
             // set ourself as delegate
             peripheral.delegate = self;
-
+            
             // options
             NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
             if (@available(iOS 17, *)) {
                 // note: use CBConnectPeripheralOptionEnableAutoReconnect constant
                 // when all developers can be excpected to be on iOS 17+
                 [options setObject:autoConnect forKey:@"kCBConnectOptionEnableAutoReconnect"];
-            } 
-
+            }
+            
             [self.centralManager connectPeripheral:peripheral options:options];
-
+            
             // add to currently connecting peripherals
             [self.currentlyConnectingPeripherals setObject:peripheral forKey:remoteId];
             
@@ -406,7 +406,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         {
             // remoteId is passed raw, not in a NSDictionary
             NSString *remoteId = [call arguments];
-
+            
             // already disconnected?
             CBPeripheral *peripheral = nil;
             if (peripheral == nil ) {
@@ -414,7 +414,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 if (peripheral != nil) {
                     Log(LDEBUG, @"disconnect: cancelling connection in progress");
                     [self.currentlyConnectingPeripherals removeObjectForKey:remoteId];
-                }   
+                }
             }
             if (peripheral == nil) {
                 peripheral = [self getConnectedPeripheral:remoteId];
@@ -424,7 +424,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result(@NO); // no work to do
                 return;
             }
-
+            
             // disconnect
             [self.centralManager cancelPeripheralConnection:peripheral];
             
@@ -434,7 +434,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         {
             // remoteId is passed raw, not in a NSDictionary
             NSString *remoteId = [call arguments];
-
+            
             // Find peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -442,14 +442,14 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"discoverServices" message:s details:remoteId]);
                 return;
             }
-
+            
             // Clear helper arrays
             [self.servicesToDiscover removeAllObjects];
             [self.characteristicsToDiscover removeAllObjects];
-
+            
             // start discovery
             [peripheral discoverServices:nil];
-
+            
             result(@YES);
         }
         else if ([@"readCharacteristic" isEqualToString:call.method])
@@ -460,7 +460,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSString  *characteristicUuid   = args[@"characteristic_uuid"];
             NSString  *serviceUuid          = args[@"service_uuid"];
             NSString  *secondaryServiceUuid = args[@"secondary_service_uuid"];
-
+            
             // Find peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -468,7 +468,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"readCharacteristic" message:s details:remoteId]);
                 return;
             }
-
+            
             // Find characteristic
             NSError *error = nil;
             CBCharacteristic *characteristic = [self locateCharacteristic:characteristicUuid
@@ -480,17 +480,17 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"readCharacteristic" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // check readable
             if ((characteristic.properties & CBCharacteristicPropertyRead) == 0) {
                 NSString* s = @"The READ property is not supported by this BLE characteristic";
                 result([FlutterError errorWithCode:@"writeCharacteristic" message:s details:NULL]);
                 return;
             }
-
+            
             // Trigger a read
             [peripheral readValueForCharacteristic:characteristic];
-
+            
             result(@YES);
         }
         else if ([@"writeCharacteristic" isEqualToString:call.method])
@@ -512,13 +512,13 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeCharacteristic" message:s details:remoteId]);
                 return;
             }
-
+            
             // Get correct write type
             CBCharacteristicWriteType writeType =
-                ([writeTypeNumber intValue] == 0
-                    ? CBCharacteristicWriteWithResponse
-                    : CBCharacteristicWriteWithoutResponse);
-
+            ([writeTypeNumber intValue] == 0
+             ? CBCharacteristicWriteWithResponse
+             : CBCharacteristicWriteWithoutResponse);
+            
             // check maximum payload
             int maxLen = [self getMaxPayload:peripheral forType:writeType allowLongWrite:[allowLongWrite boolValue]];
             int dataLen = (int) [self convertHexToData:value].length;
@@ -531,15 +531,15 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeCharacteristic" message:s details:NULL]);
                 return;
             }
-
+            
             // device not ready?
             if (writeType == CBCharacteristicWriteWithoutResponse && !peripheral.canSendWriteWithoutResponse) {
                 // canSendWriteWithoutResponse is the current readiness of the peripheral to accept more write requests.
                 NSString* s = @"canSendWriteWithoutResponse is false. you must slow down";
                 result([FlutterError errorWithCode:@"writeCharacteristic" message:s details:NULL]);
                 return;
-            } 
-
+            }
+            
             // Find characteristic
             NSError *error = nil;
             CBCharacteristic *characteristic = [self locateCharacteristic:characteristicUuid
@@ -551,7 +551,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeCharacteristic" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // check writeable
             if(writeType == CBCharacteristicWriteWithoutResponse) {
                 if ((characteristic.properties & CBCharacteristicPropertyWriteWithoutResponse) == 0) {
@@ -566,19 +566,19 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     return;
                 }
             }
-
+            
             // remember the data we are writing
             NSString *key = [NSString stringWithFormat:@"%@:%@:%@", remoteId, serviceUuid, characteristicUuid];
             [self.writeChrs setObject:value forKey:key];
-                  
+            
             // Write to characteristic
             [peripheral writeValue:[self convertHexToData:value] forCharacteristic:characteristic type:writeType];
-
+            
             // remember the most recent write withoutResponse
             if (writeType == CBCharacteristicWriteWithoutResponse) {
                 [self.didWriteWithoutResponse setObject:args forKey:remoteId];
             }
-
+            
             result(@YES);
         }
         else if ([@"readDescriptor" isEqualToString:call.method])
@@ -590,7 +590,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSString  *serviceUuid          = args[@"service_uuid"];
             NSString  *secondaryServiceUuid = args[@"secondary_service_uuid"];
             NSString  *characteristicUuid   = args[@"characteristic_uuid"];
-
+            
             // Find peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -598,7 +598,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"readDescriptor" message:s details:remoteId]);
                 return;
             }
-
+            
             // Find characteristic
             NSError *error = nil;
             CBCharacteristic *characteristic = [self locateCharacteristic:characteristicUuid
@@ -610,16 +610,16 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"readDescriptor" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // Find descriptor
             CBDescriptor *descriptor = [self locateDescriptor:descriptorUuid characteristic:characteristic error:&error];
             if (descriptor == nil) {
                 result([FlutterError errorWithCode:@"readDescriptor" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             [peripheral readValueForDescriptor:descriptor];
-
+            
             result(@YES);
         }
         else if ([@"writeDescriptor" isEqualToString:call.method])
@@ -632,7 +632,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSString  *secondaryServiceUuid = args[@"secondary_service_uuid"];
             NSString  *characteristicUuid   = args[@"characteristic_uuid"];
             NSString  *value                = args[@"value"];
-
+            
             // Find peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -640,7 +640,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeDescriptor" message:s details:remoteId]);
                 return;
             }
-
+            
             // check mtu
             int mtu = (int) [self getMtu:peripheral];
             int dataLen = (int) [self convertHexToData:value].length;
@@ -650,7 +650,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeDescriptor" message:s details:NULL]);
                 return;
             }
-
+            
             // Find characteristic
             NSError *error = nil;
             CBCharacteristic *characteristic = [self locateCharacteristic:characteristicUuid
@@ -662,21 +662,21 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"writeDescriptor" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // Find descriptor
             CBDescriptor *descriptor = [self locateDescriptor:descriptorUuid characteristic:characteristic error:&error];
             if (descriptor == nil) {
                 result([FlutterError errorWithCode:@"writeDescriptor" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // remember the data we are writing
             NSString *key = [NSString stringWithFormat:@"%@:%@:%@:%@", remoteId, serviceUuid, characteristicUuid, descriptorUuid];
             [self.writeDescs setObject:value forKey:key];
-
+            
             // Write descriptor
             [peripheral writeValue:[self convertHexToData:value] forDescriptor:descriptor];
-
+            
             result(@YES);
         }
         else if ([@"setNotifyValue" isEqualToString:call.method])
@@ -688,7 +688,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
             NSString   *secondaryServiceUuid  = args[@"secondary_service_uuid"];
             NSString   *characteristicUuid    = args[@"characteristic_uuid"];
             NSNumber   *enable                = args[@"enable"];
-
+            
             // Find peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -696,7 +696,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"setNotifyValue" message:s details:remoteId]);
                 return;
             }
-
+            
             // Find characteristic
             NSError *error = nil;
             CBCharacteristic *characteristic = [self locateCharacteristic:characteristicUuid
@@ -708,7 +708,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"setNotifyValue" message:error.localizedDescription details:NULL]);
                 return;
             }
-
+            
             // check notify-able
             bool canNotify = (characteristic.properties & CBCharacteristicPropertyNotify) != 0;
             bool canIndicate = (characteristic.properties & CBCharacteristicPropertyIndicate) != 0;
@@ -717,13 +717,13 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"setNotifyValue" message:s details:NULL]);
                 return;
             }
-
+            
             // Check that CCCD is found, this is necessary for subscribing
             CBDescriptor *descriptor = [self locateDescriptor:CCCD characteristic:characteristic error:nil];
             if (descriptor == nil) {
                 Log(LWARNING, @"Warning: CCCD descriptor for characteristic not found: %@", characteristicUuid);
             }
-
+            
             // Set notification value
             [peripheral setNotifyValue:[enable boolValue] forCharacteristic:characteristic];
             
@@ -732,14 +732,14 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         else if ([@"requestMtu" isEqualToString:call.method])
         {
             result([FlutterError errorWithCode:@"requestMtu"
-                                    message:@"iOS does not allow mtu requests to the peripheral"
-                                    details:NULL]);
+                                       message:@"iOS does not allow mtu requests to the peripheral"
+                                       details:NULL]);
         }
         else if ([@"readRssi" isEqualToString:call.method])
         {
             // remoteId is passed raw, not in a NSDictionary
             NSString *remoteId = [call arguments];
-
+            
             // get peripheral
             CBPeripheral *peripheral = [self getConnectedPeripheral:remoteId];
             if (peripheral == nil) {
@@ -747,52 +747,188 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                 result([FlutterError errorWithCode:@"readRssi" message:s details:remoteId]);
                 return;
             }
-
+            
             [peripheral readRSSI];
-
+            
             result(@YES);
         }
         else if([@"requestConnectionPriority" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"requestConnectionPriority" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"requestConnectionPriority"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"getPhySupport" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"getPhySupport" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"getPhySupport"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"setPreferredPhy" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"setPreferredPhy" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"setPreferredPhy"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"getBondedDevices" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"getBondedDevices" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"getBondedDevices"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"createBond" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"setPreferredPhy" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"setPreferredPhy"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"removeBond" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"removeBond" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"removeBond"
+                                       message:@"android only"
+                                       details:NULL]);
         }
         else if([@"clearGattCache" isEqualToString:call.method])
         {
-            result([FlutterError errorWithCode:@"clearGattCache" 
-                                    message:@"android only"
-                                    details:NULL]);
+            result([FlutterError errorWithCode:@"clearGattCache"
+                                       message:@"android only"
+                                       details:NULL]);
+        }
+        else if([@"getStarMaxMessage" isEqualToString:call.method])
+        {
+            NSDictionary *args = (NSDictionary*) call.arguments;
+            NSString *type = args[@"type"];
+            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather"];
+            
+//            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//            [formatter setDateFormat:@"yyyyMMdd"];
+//            NSString *dateStr = [formatter stringFromDate:NSDate.date];
+            
+            int item = [items indexOfObject:type];
+            switch (item) {
+                case 0:
+                    // 获取设备状态
+                    result([STBlueToothSender readDeviceState]);
+                   break;
+                case 1:
+                    //查找设备
+                    result([STBlueToothSender writeFindDevice]);
+                    break;
+                case 2:
+                    //获取电池电量
+                    result([STBlueToothSender readDeviceBattery]);
+                   break;
+                case 3:
+                    //绑定设备
+                    result([STBlueToothSender writeDeviceBind]);
+                   break;
+                case 4:
+                {
+                    // 根据日期同步心率
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readHeartRateHistoryWithDate:dateStr]);
+                }
+                    break;
+                case 5:
+                {
+                    // 根据日期同步血压
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readBloodPressureHistoryWithDate:dateStr]);
+                }
+                    break;
+                case 6:
+                {
+                    // 根据日期同步血氧
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readBloodOxygenHistoryWithDate:dateStr]);
+                }
+                    break;
+                case 7:
+                {
+                    // 根据日期同步压力
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readPhysicalPressureHistoryWithDate:dateStr]);
+                }
+                    break;
+                case 8:
+                {
+                    NSNumber *historyType = args[@"historyType"];
+                    NSInteger _type = [historyType integerValue];
+                    STHistoryCmd historyCmd = ST_History_Step;
+                    switch(_type){
+                        case 1:
+                            // 运动
+                            historyCmd = ST_History_Sport;
+                            break;
+                        case 2:
+                            // 计步、睡眠
+                            historyCmd = ST_History_Step;
+                            break;
+                        case 3:
+                            // 心率
+                            historyCmd = ST_History_HR;
+                            break;
+                        case 4:
+                            // 血压
+                            historyCmd = ST_History_BP;
+                            break;
+                        case 5:
+                            // 血氧
+                            historyCmd = ST_History_BQ;
+                            break;
+                        case 6:
+                            // 压力
+                            historyCmd = ST_History_Pressure;
+                            break;
+                        case 7:
+                            // 梅脱
+                            historyCmd = ST_History_Met;
+                            break;
+                        case 8:
+                            // 温度
+                            historyCmd = ST_History_Temp;
+                            break;
+                        case 9:
+                            // Mai
+                            historyCmd = ST_History_Mai;
+                            break;
+                    }
+                    // 获取有效日期列表
+                    result([STBlueToothSender readHistoryValidDate:historyCmd]);
+                }
+                    break;
+                case 9:
+                    // 设置时区时间
+                    result([STBlueToothSender writeDeviceDateTime]);
+                    break;
+                case 10:
+                    // 获取时区时间
+                    result([STBlueToothSender readDeviceDateTime]);
+                    break;
+                case 11:
+                {
+                    NSMutableArray<STWeather *>*modelArr = NSMutableArray.new;
+                    for (int i = 0; i < 7; i++) {
+                        STWeather *model = STWeather.new;
+                        model.temp = @"31";
+                        model.tempMin = @"26";
+                        model.tempMax = @"32";
+                        model.conditionCode = [self stmWeatherCodeTransform:200];
+                        model.unit = 0;
+                        model.windSpeed = @"1";
+                        model.humidity = @"2";
+                        model.vis = @"30";
+                        model.uvIndex = @"4";
+                        model.AQI = @"1";
+                        
+                        [modelArr addObject:model];
+                    }
+                    result([STBlueToothSender writeWeather:modelArr]);
+                }
+                    break;
+                default:
+                   break;
+            }
         }
         else
         {
@@ -1430,24 +1566,62 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
     } else {
         Log(LDEBUG, @"didUpdateValueForCharacteristic:");
         Log(LDEBUG, @"  chr: %@", [characteristic.UUID uuidStr]);
+        [STBlueToothData.sharedInstance notifyRunmefit:peripheral WriteCharacter: characteristic Characteristic:characteristic Error:error Complete:^(NSError * _Nonnull error, REV_TYPE revType, ERROR_TYPE errorType, id  _Nonnull responseObject) {
+            if (error) {
+                NSLog(@"error:%@",error);
+            }else{
+                NSDictionary *dict = @{ST_RevType_Key:@(revType),
+                                       ST_ErrorType_Key:@(errorType),
+                                       @"object": responseObject == nil ? @{} : responseObject};
+                
+                // 将NSDictionary转换为NSData
+                NSError *error;
+                NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+                
+                if (error) {
+                    NSLog(@"Error: %@", error);
+                } else {
+                    NSLog(@"NSData representation: %@", data);
+                }
+                
+                ServicePair *pair = [self getServicePair:peripheral characteristic:characteristic];
+
+                // See BmCharacteristicData
+                NSDictionary* result = @{
+                    @"remote_id":               [peripheral.identifier UUIDString],
+                    @"service_uuid":            [pair.primary.UUID uuidStr],
+                    @"secondary_service_uuid":  pair.secondary ? [pair.secondary.UUID uuidStr] : [NSNull null],
+                    @"characteristic_uuid":     [characteristic.UUID uuidStr],
+                    @"value":                   [self convertDataToHex:data],
+                    @"success":                 error == nil ? @(1) : @(0),
+                    @"error_string":            error ? [error localizedDescription] : @"success",
+                    @"error_code":              error ? @(error.code) : @(0),
+                };
+
+                [self.methodChannel invokeMethod:@"OnCharacteristicReceived" arguments:result];
+            }
+        }];
     }
 
-    ServicePair *pair = [self getServicePair:peripheral characteristic:characteristic];
-
-    // See BmCharacteristicData
-    NSDictionary* result = @{
-        @"remote_id":               [peripheral.identifier UUIDString],
-        @"service_uuid":            [pair.primary.UUID uuidStr],
-        @"secondary_service_uuid":  pair.secondary ? [pair.secondary.UUID uuidStr] : [NSNull null],
-        @"characteristic_uuid":     [characteristic.UUID uuidStr],
-        @"value":                   [self convertDataToHex:characteristic.value],
-        @"success":                 error == nil ? @(1) : @(0),
-        @"error_string":            error ? [error localizedDescription] : @"success",
-        @"error_code":              error ? @(error.code) : @(0),
-    };
-
-    [self.methodChannel invokeMethod:@"OnCharacteristicReceived" arguments:result];
+    // [self notifyRunmefitSync:peripheral writeCharacteristic:characteristic error:error];
+//    ServicePair *pair = [self getServicePair:peripheral characteristic:characteristic];
+//
+//    // See BmCharacteristicData
+//    NSDictionary* result = @{
+//        @"remote_id":               [peripheral.identifier UUIDString],
+//        @"service_uuid":            [pair.primary.UUID uuidStr],
+//        @"secondary_service_uuid":  pair.secondary ? [pair.secondary.UUID uuidStr] : [NSNull null],
+//        @"characteristic_uuid":     [characteristic.UUID uuidStr],
+//        @"value":                   [self convertDataToHex:characteristic.value],
+//        @"success":                 error == nil ? @(1) : @(0),
+//        @"error_string":            error ? [error localizedDescription] : @"success",
+//        @"error_code":              error ? @(error.code) : @(0),
+//    };
+//
+//    [self.methodChannel invokeMethod:@"OnCharacteristicReceived" arguments:result];
 }
+
+
 
 - (void)peripheral:(CBPeripheral *)peripheral
     didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
@@ -2215,5 +2389,142 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         }
     }
     return data;
+}
+
+//星迈天气类型
+- (NSString *)stmWeatherCodeTransform:(int)code {
+    
+    NSString *transformCode = @"24";//未知
+    switch (code) {
+        case 100:
+        case 150:
+            transformCode = @"6";//晴
+            break;
+            
+        case 101:
+        case 151://多云
+        case 102:
+        case 152://少云
+        case 103:
+        case 153://晴间多云
+            transformCode = @"5";
+            break;
+            
+        case 104:
+        case 154:
+            transformCode = @"4";//阴
+            break;
+            
+        case 300:
+        case 350://阵雨
+        case 301:
+        case 351://强阵雨
+        case 302://雷阵雨
+        case 303://强雷阵雨
+            transformCode = @"9";
+            break;
+
+        case 304://雷阵雨伴有冰雹
+            transformCode = @"10";
+            break;
+            
+        case 309://毛毛雨/细雨
+        case 399://雨
+        case 305://小雨
+            transformCode = @"1";
+            break;
+            
+        case 314://小到中雨
+        case 315://中到大雨
+        case 306://中雨
+            transformCode = @"2";
+            break;
+            
+        case 316://大到暴雨
+        case 307://大雨
+            transformCode = @"3";
+            break;
+            
+        case 308://极端降雨
+        case 310://暴雨
+        case 311://大暴雨
+        case 312://特大暴雨
+        case 313://冻雨
+        case 317://暴雨到大暴雨
+        case 318://大暴雨到特大暴雨
+            transformCode = @"22";
+            break;
+            
+        case 499://雪
+        case 400://小雪
+            transformCode = @"11";
+            break;
+                            
+        case 401://中雪
+        case 407:
+        case 457://阵雪
+        case 408://小到中雪
+            transformCode = @"12";
+            break;
+            
+        case 403://暴雪
+        case 409://中到大雪
+        case 410://大到暴雪
+        case 402://大雪
+            transformCode = @"13";
+            break;
+       
+        case 404://雨夹雪
+        case 405://雨雪天气
+        case 406:
+        case 456://阵雨夹雪
+            transformCode = @"14";
+            break;
+        
+        case 503:
+        case 504://扬沙
+        case 507://沙尘暴
+        case 508://强沙尘暴
+            transformCode = @"15";
+            break;
+            
+        case 500://薄雾
+        case 509://浓雾
+        case 510://强浓雾
+        case 511://中度霾
+        case 512://重度霾
+        case 513://严重霾
+        case 514://大雾
+        case 515://特强浓雾
+        case 501://雾
+        case 502://霾
+            transformCode = @"7";
+            break;
+            
+        case 900://热
+        case 901://冷
+        case 999:
+            transformCode = @"24";//未知
+            break;
+        case 800:
+            break;
+        case 801:
+            break;
+        case 802:
+            break;
+        case 803:
+            break;
+        case 804:
+            break;
+        case 805:
+            break;
+        case 806:
+            break;
+        case 807:
+            break;
+        default:
+            break;
+    }
+    return transformCode;
 }
 @end
