@@ -95,7 +95,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
       print(cr);
       String result = String.fromCharCodes(cr.value);
       final json = jsonDecode(result);
+      print("-------------------");
       print(json);
+      print("-------------------");
       switch (json['ST_RevType_Key']) {
         case 2:
           var content = "语言（0英语 1中文）：${json['object']['ST_LanguageDataKey']}"
@@ -473,8 +475,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
             trailing: IconButton(
               icon: const Icon(Icons.send),
               onPressed: () async {
-                var res = await FlutterBluePlus.starMaxSender(
-                    'readPhysicalPressureHistoryWithDate');
+                var res = await FlutterBluePlus.starMaxSenderArgs({
+                  'type':'readPhysicalPressureHistoryWithDate',
+                  'dateStr':'20240930'
+                });
                 _request(res);
               },
             )),

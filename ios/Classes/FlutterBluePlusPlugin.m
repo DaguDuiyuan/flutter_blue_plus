@@ -798,7 +798,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         {
             NSDictionary *args = (NSDictionary*) call.arguments;
             NSString *type = args[@"type"];
-            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather"];
+            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather", @"readStepAndSleepHistoryWithDate", @"readMetsHistoryWithDate", @"readTemperatureHistoryWithDate", @"readMaiHistoryWithDate", @"readSugarHistoryWithDate", @"writeDeviceState"];
             
 //            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 //            [formatter setDateFormat:@"yyyyMMdd"];
@@ -907,6 +907,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     break;
                 case 11:
                 {
+                    // fixme 设置天气
                     NSMutableArray<STWeather *>*modelArr = NSMutableArray.new;
                     for (int i = 0; i < 7; i++) {
                         STWeather *model = STWeather.new;
@@ -924,6 +925,57 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                         [modelArr addObject:model];
                     }
                     result([STBlueToothSender writeWeather:modelArr]);
+                }
+                    break;
+                case 12:
+                {
+                    // 根据日期同步记步/睡眠
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readStepAndSleepHistoryWithDate:dateStr]);
+                }
+                case 13:
+                {
+                    // 根据日期同步梅脱
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readMetsHistoryWithDate:dateStr]);
+                }
+                case 14:
+                {
+                    // 同步温度
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readTemperatureHistoryWithDate:dateStr]);
+                }
+                case 15:
+                {
+                    // 根据日期同步Mai
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readMaiHistoryWithDate:dateStr]);
+                }
+                case 16:
+                {
+                    // 根据日期同步血糖
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readSugarHistoryWithDate:dateStr]);
+                }
+                case 17:
+                {
+                    NSNumber *timeMode = args[@"timeMode"];
+                    NSNumber *brightDuration = args[@"brightDuration"];
+                    NSNumber *brightness = args[@"brightness"];
+                    NSNumber *trunWrist = args[@"trunWrist"];
+                    
+                    // 设置设备
+                    STDeviceState *model = STDeviceState.new;
+                    model.unit = STUnitMetric;///单位:公制
+                    model.temperatureUnit = STlTemperatureUnitCelsius;///温度单位:摄氏
+                    model.language = STlLanguageChinese;///语言:中文
+                    
+                    model.timeMode = [timeMode  isEqual: @1] ? STlTimeModeHour12 : STlTimeModeHour24;///时间制式:24小时
+                    model.brightDuration = [brightDuration integerValue];///亮屏时长:10秒
+                    model.brightness = [brightness integerValue];///屏幕亮度:5
+                    model.trunWrist = [trunWrist integerValue];///翻腕亮屏:开
+                    
+                    result([STBlueToothSender writeDeviceState:model]);
                 }
                     break;
                 default:

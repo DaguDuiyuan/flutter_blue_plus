@@ -28,6 +28,8 @@ class _ScanScreenState extends State<ScanScreen> {
     super.initState();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
+      // var res = results.where((r) => r.rssi >= -60).toList();
+
       _scanResults = results;
       if (mounted) {
         setState(() {});
@@ -53,8 +55,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Future onScanPressed() async {
     try {
-      // `withServices` is required on iOS for privacy purposes, ignored on android.
-      var withServices = [Guid("180f")]; // Battery Level Service
+      var withServices = [Guid("6e400001-b5a3-f393-e0a9-e50e24dcca9d")];
       _systemDevices = await FlutterBluePlus.systemDevices(withServices);
     } catch (e) {
       Snackbar.show(ABC.b, prettyException("System Devices Error:", e),
@@ -66,7 +67,6 @@ class _ScanScreenState extends State<ScanScreen> {
         withMsd: [
           MsdFilter(
             256,
-            data: [81, 35, 21, 131, 113, 113],
           )
         ],
       );
@@ -106,7 +106,6 @@ class _ScanScreenState extends State<ScanScreen> {
         withMsd: [
           MsdFilter(
             256,
-            data: [81, 35, 21, 131, 113, 113],
           )
         ],
       );
