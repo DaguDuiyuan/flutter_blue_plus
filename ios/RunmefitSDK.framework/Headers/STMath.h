@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 //MARK: 8位和byte
 + (Byte)bitsToByte:(unsigned char *)bit;
 + (NSData *)byteToBits:(Byte)byte;
++ (NSData *)byteToBits2:(Byte)byte;
 
 //MARK: byte高低4位
 + (int)getHeight4:(Byte)byte;

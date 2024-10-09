@@ -23,8 +23,9 @@
 #import <RunmefitSDK/STAlarmEvent.h>
 #import <RunmefitSDK/STRealTimeSwitchs.h>
 #import <RunmefitSDK/STSportConfig.h>
+#import <RunmefitSDK/STSummerTime.h>
 
-//#import <RunmefitSDK/STBlueToothString.h>
+#import <RunmefitSDK/STBlueToothString.h>
 #import <UIKit/UIKit.h>
 
 typedef enum : NSUInteger {
@@ -48,6 +49,8 @@ typedef enum : NSUInteger {
     ST_History_Met         =   0x67,     //同步梅脱
     ST_History_Temp        =   0x68,     //同步温度
     ST_History_Mai         =   0x6E,     //同步Mai
+    ST_History_Sugar       =   0x72      //同步血糖
+    
 
 }STHistoryCmd;
 
@@ -93,6 +96,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface STBlueToothSender : NSObject
 
+#pragma mark - 蓝牙协议版本号
+
++ (NSString *)getDocVersionNumber;
+
 #pragma mark - 简单设置类
 
 //绑定设备
@@ -113,6 +120,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 //获取电池电量
 + (NSData *)readDeviceBattery;
+
+//获取ANCS设备
++ (NSData *)readDeviceANCS;
+
+//定制开关
++ (NSData *)readDeviceDZKG;
++ (NSData *)writeDeviceDZKG:(int)type Open:(BOOL)open;
 
 //获取设备版本信息
 + (NSData *)readDeviceVersion;
@@ -199,6 +213,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 + (NSData *)readStepAndSleepHistoryWithDate:(NSString * _Nonnull)dateStr;
 
+//同步新睡眠数据0x74
+///
+/// 获取某一天的历史记录数据
+/// \param dateStr 日期yyyyMMdd
+///
++ (NSData *)readNewSleepHistoryWithDate:(NSString * _Nonnull)dateStr;
+
 //同步心率数据
 ///
 /// 获取某一天的历史记录数据
@@ -241,6 +262,13 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 + (NSData *)readTemperatureHistoryWithDate:(NSString * _Nonnull)dateStr;
 
+//同步呼吸率数据
+///
+/// 获取某一天的历史记录数据
+/// \param dateStr 日期yyyyMMdd
+///
++ (NSData *)readGapHistoryWithDate:(NSString * _Nonnull)dateStr;
+
 //同步Mai数据
 ///
 /// 获取某一天的历史记录数据
@@ -250,10 +278,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 //同步血糖数据
 ///
-/// 获取某一天的历史记录数据
+/// 获取某一天的历史记录数据    
 /// \param dateStr 日期yyyyMMdd
 ///
 + (NSData *)readSugarHistoryWithDate:(NSString * _Nonnull)dateStr;
+
+
+//同步中高强度、站立次数
+///
+/// 获取某一天的历史记录数据
+/// \param dateStr 日期yyyyMMdd
+///
++ (NSData *)readMediumHighControlWithDate:(NSString * _Nonnull)dateStr;
+
 
 //获取数据有效日期列表(对应数据类型)
 + (NSData *)readHistoryValidDate:(STHistoryCmd)cmd;
@@ -333,6 +370,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 //健康测量0x42(设置)
 + (NSData *)writeDeviceHealthMeasure:(Byte)Id On:(BOOL)on;
+
+//血糖校准
++ (NSData *)readHealthCheckBloodSugar;
++ (NSData *)writeHealthCheckBloodSugar:(NSDictionary *)dict;
++ (NSData *)clearHealthCheckBloodSugar;
++ (NSData *)beginHealthCheckBloodSugar;
+
+//血压校准
++ (NSData *)readHealthCheckBloodpressure;
++ (NSData *)writeHealthCheckBloodpressure:(NSArray *)valueArr;
++ (NSData *)clearHealthCheckBloodpressure;
++ (NSData *)beginHealthCheckBloodpressure;
+
+//推送世界时钟夏令时刻表
++ (NSData *)writeSummerTime:(NSArray<STSummerTime *> *)modelArr;
+
+//获取站立和运动时长
++ (NSData *)readStandingMovementTime;
+
+//获取NFC卡包卡片
++ (NSData *)readNFCCreate;
++ (NSData *)writeNFCCreate:(NSString *)name type_id:(int)type;
++ (NSData *)writeNFCCopy:(NSString *)name type_id:(int)type;
+
+//推送NFC破解卡数据
++ (NSData *)writeNFCCrack:(NSData *)crack;
+
+//心率报警阀值(设置)
++ (NSData *)writeThresholdHR:(NSInteger)thresholdHR IsOn:(BOOL)isOn;
++ (NSData *)readThresholdHR;
+
+//运动数据双向(同步)
++ (NSData *)writeMotionControl:(NSInteger)motionID State:(NSInteger)stateID Distance:(NSInteger)distance;
+
+//获取语言列表 (双向)
++ (NSData *)readCustomLanguageList;
 
 @end
 

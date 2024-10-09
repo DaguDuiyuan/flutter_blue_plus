@@ -1,7 +1,7 @@
 //
 //  STBlueToothString.h
 //  RunmefitSDK
-//
+//readNewSleepHistoryWithDate
 //  Created by 星迈 on 2022/9/15.
 //  🍎解析指令集
 
@@ -128,6 +128,12 @@ static const NSString *ST_GetVersionNumberKey = @"ST_GetVersionNumberKey";
 //获取固件UI版本号
 static const NSString *ST_GetUIVersionNumberKey = @"ST_GetUIVersionNumberKey";
 
+//获取固件协议版本号
+static const NSString *ST_GetDocVersionNumberKey = @"ST_GetDocVersionNumberKey";
+
+//支持新睡眠算法
+static const NSString *ST_SupportNewSleepKey = @"ST_SupportNewSleepKey";
+
 //获取设备MTU
 static const NSString *ST_GetDeviceMtuKey = @"ST_GetDeviceMtuKey";
 
@@ -140,8 +146,11 @@ static const NSString *ST_GetDeviceHeightKey = @"ST_GetDeviceHeightKey";
 //获取设备形状(0：圆屏，1：方屏)
 static const NSString *ST_GetDeviceShapeKey = @"ST_GetDeviceShapeKey";
 
-//获取设备型号
+//获取设备型号 批次号
 static const NSString *ST_GetDeviceModelKey = @"ST_GetDeviceModelKey";
+
+//设备支持的语言
+static const NSString *ST_SupportLanguageIdKey = @"ST_SupportLanguageIdKey";
 
 //是否需要强制升级UI
 static const NSString *ST_ForcedUpgradeUIKey = @"ST_ForcedUpgradeUIKey";
@@ -249,7 +258,8 @@ static const NSString *ST_GetCurrentValueSugarKey = @"ST_GetCurrentValueSugarKey
 
 //是否佩戴
 static const NSString *ST_GetCurrentStateWearKey = @"ST_GetCurrentStateWearKey";///-1:未知；0:未戴；1:已戴
-
+//获取当前数据呼吸率
+static const NSString *ST_GetCurrentValueBRKey = @"ST_GetCurrentValueBRKey";
 #pragma mark - 获取历史
 
 //获取数据有效日期列表
@@ -288,6 +298,7 @@ static const NSString *ST_GetSportRecordSpeedKey = @"ST_GetSportRecordSpeedKey";
 static const NSString *ST_GetSportRecordCaloriesKey = @"ST_GetSportRecordCaloriesKey";///卡路里
 static const NSString *ST_GetSportRecordPaceKey = @"ST_GetSportRecordPaceKey";///配速
 static const NSString *ST_GetSportRecordStrideKey = @"ST_GetSportRecordStrideKey";///步频
+static const NSString *ST_GetSportRecordAvgHRKey = @"ST_GetSportRecordAvgHRKey";///平均心率
 static const NSString *ST_GetSportRecordHRLengthKey = @"ST_GetSportRecordHRLengthKey";///心率长度
 static const NSString *ST_GetSportRecordHRDetailsKey = @"ST_GetSportRecordHRDetailsKey";///心率数据
 
@@ -329,5 +340,15 @@ static const NSString *ST_WristCodeKey = @"ST_WristCodeKey";
 static const NSString *ST_HealthMeasureIdKey = @"ST_HealthMeasureIdKey";
 //健康数值
 static const NSString *ST_HealthMeasureValueKey = @"ST_HealthMeasureValueKey";
+
+#pragma mark - 血糖/血压校准
+
+static const NSString *ST_HealthCheckDateKey = @"ST_HealthCheckDateKey";
+static const NSString *ST_HealthCheckMaxValueKey = @"ST_HealthCheckMaxValueKey";
+static const NSString *ST_HealthCheckMinValueKey = @"ST_HealthCheckMinValueKey";
+
+static const NSString *ST_HealthCheckTypeKey = @"ST_HealthCheckTypeKey";
+static const NSString *ST_HealthCheckStatusKey = @"ST_HealthCheckStatusKey";
+static const NSString *ST_HealthCheckContentKey = @"ST_HealthCheckContentKey";
 
 #endif /* STBlueToothString_h */

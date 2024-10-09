@@ -47,5 +47,6 @@ static const NSString *ST_ErrorType_Key = @"ST_ErrorType_Key";///ERROR
 #import <RunmefitSDK/STAlarmEvent.h>
 #import <RunmefitSDK/STRealTimeSwitchs.h>
 #import <RunmefitSDK/STSportConfig.h>
+#import <RunmefitSDK/STSummerTime.h>
 
 #import <RunmefitSDK/STBlueToothString.h>

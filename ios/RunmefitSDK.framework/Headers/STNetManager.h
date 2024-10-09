@@ -67,11 +67,11 @@ typedef void(^Failed)(NSError *error);
                     succeed:(SucceedBlock)succeed
                      failed:(Failed)failed;
 
-//下载文件
-- (void)requestDownloadWithUrlstring:(NSString *)urlStr
-                            progress:(void (^)(NSProgress *downloadProgress)) downloadProgressBlock
-                         destination:(NSURL * (^)(NSURL *targetPath, NSURLResponse *response))destination
-                   completionHandler:(void (^)(NSURLResponse *response, NSURL *filePath, NSError *error))completionHandler;
+//世界时钟夏令时刻表
+- (void)getWorldSummerTimes:(SucceedBlock)succeed
+                     failed:(Failed)failed;
+
+
 
 @end
 

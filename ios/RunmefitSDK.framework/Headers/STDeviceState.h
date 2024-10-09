@@ -60,23 +60,28 @@ typedef enum : NSUInteger {
     /// 🇹🇭泰语
     STlLanguageThai = 0x0B,
     
-    /// 🇺🇦乌克兰语
-//    STlLanguageUkrainian = 0x0C,
-
+    /// 🇻🇳越南
+    STlLanguageVietnamese = 0x0C,
+    /// 🇲🇾马来西亚
+    STlLanguageMalaysia = 0x0D,
+    /// 🇮🇩印尼
+    STlLanguageIndonesia = 0x0E,
     /// 🇵🇹葡萄牙语
-//    STlLanguagePortuguese = 0x0D,
-   
-    /// 🇵🇱波兰语
-//    STlLanguagePoland = 0x0E,
-   
+    STlLanguagePortuguese = 0x0F,
     /// 🇷🇴罗马尼亚语
-//    STlLanguageRomania = 0x0F,
-    
+    STlLanguageRomania = 0x10,
+    /// 🇵🇱波兰语
+    STlLanguagePoland = 0x11,
     /// 🇹🇷土耳其语
-//    STlLanguageTurkish = 0x10,
-    
+    STlLanguageTurkish = 0x12,
+    /// 🇲🇳蒙古语
+    STlLanguageMongolian = 0x13,
+    /// 🇮🇳印度
+    STlLanguageHindi = 0x14,
     /// 🇸🇦阿拉伯语
-//    STlLanguageArabic = 0x11,
+    //STlLanguageArabic = 0x15,
+    /// 🇮🇱希伯来语
+    //STlLanguageHebrew = 0x16,
     
 }STlLanguage;
 

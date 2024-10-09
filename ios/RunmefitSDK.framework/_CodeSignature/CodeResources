@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/RunmefitSDK.h</key>
 		<data>
-		rtexesAPfOVcVyKWHyjVhjG1T0s=
+		EJ+gA57oqXoKJBi1Dy1WHXxoEps=
 		</data>
 		<key>Headers/STAlarmClock.h</key>
 		<data>
@@ -22,15 +22,15 @@
 		</data>
 		<key>Headers/STBlueToothData.h</key>
 		<data>
-		O+0BGxcn8M7g0wYTjQWvzPfGmXk=
+		1CsZd1ERDLv4QA8k3QwSpC1Iw1Y=
 		</data>
 		<key>Headers/STBlueToothSender.h</key>
 		<data>
-		ppsHhH82yIRpBlrLqum8jFLBBY0=
+		zCuYg7bytBvn8gYeuDXad06hsVg=
 		</data>
 		<key>Headers/STBlueToothString.h</key>
 		<data>
-		7AspcyerhyZ0dQucc8J3OrR1G7c=
+		kttwqGbiOp7XpD7MG/7dutX4wlI=
 		</data>
 		<key>Headers/STConfigMeasureHR.h</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>Headers/STDeviceState.h</key>
 		<data>
-		a+qQkydhmMWnwDPoG52j2eKKwk8=
+		KpEN5fbM1KeJcb7BtTsrGCawclA=
 		</data>
 		<key>Headers/STHealthSwitch.h</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Headers/STMath.h</key>
 		<data>
-		/nSggxsb/MfJuXURypuz8Lt/geg=
+		5YtsoKyJCFD0aBDaRoI6alqbL5E=
 		</data>
 		<key>Headers/STMessageNotice.h</key>
 		<data>
@@ -62,7 +62,7 @@
 		</data>
 		<key>Headers/STNetManager.h</key>
 		<data>
-		4GozG5I/H75+HdYdPncJwlLsMe8=
+		YPE08eMl6zqDJjOeYNrzMh6tzM4=
 		</data>
 		<key>Headers/STNoDisturb.h</key>
 		<data>
@@ -75,6 +75,10 @@
 		<key>Headers/STSportConfig.h</key>
 		<data>
 		uCRk+L152AN/q0kjfP57F4WTqCI=
+		</data>
+		<key>Headers/STSummerTime.h</key>
+		<data>
+		cy2Vo2m4cydYwEDfIZnSiz4Aveo=
 		</data>
 		<key>Headers/STWeather.h</key>
 		<data>
@@ -90,11 +94,11 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		sjlOX0CqydBA7NaGUxA9ouf5Eck=
+		1TbpauoCuy87+tC/ABZmIEZ6z24=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		Hp6IteiY8l+322/cIqdG8MAl4Wg=
+		sw+N1Gd0o+MaS96N95NMExm7Hk0=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -103,11 +107,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			rtexesAPfOVcVyKWHyjVhjG1T0s=
+			EJ+gA57oqXoKJBi1Dy1WHXxoEps=
 			</data>
 			<key>hash2</key>
 			<data>
-			SKT4AGuMYPSukzY5BknJr2nN7eXVseGrqQ2LMhbELdg=
+			ORMdCA7bEVhSdBLSepYpfI9EDBec5HzjWn9beiRgtdQ=
 			</data>
 		</dict>
 		<key>Headers/STAlarmClock.h</key>
@@ -147,33 +151,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			O+0BGxcn8M7g0wYTjQWvzPfGmXk=
+			1CsZd1ERDLv4QA8k3QwSpC1Iw1Y=
 			</data>
 			<key>hash2</key>
 			<data>
-			C1p9y7RkIEXK4oH1z5IRkiG11vOrl/i4wmk8jf7X2so=
+			Jt0OoHq5S/u2XCMaZorVpUsf2lVFssO9C1fUw82NovA=
 			</data>
 		</dict>
 		<key>Headers/STBlueToothSender.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			ppsHhH82yIRpBlrLqum8jFLBBY0=
+			zCuYg7bytBvn8gYeuDXad06hsVg=
 			</data>
 			<key>hash2</key>
 			<data>
-			osxQkRiLQ8zJ3f5OxoC7z8C6dEltIGH+UoqZQ78Ae1k=
+			UsT/Ws7FDBU+IgjtvMZnLW23m+F7KjckLKO8m4vo8AU=
 			</data>
 		</dict>
 		<key>Headers/STBlueToothString.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			7AspcyerhyZ0dQucc8J3OrR1G7c=
+			kttwqGbiOp7XpD7MG/7dutX4wlI=
 			</data>
 			<key>hash2</key>
 			<data>
-			o4lzkoQk5bSLM0lXdSAUwcSsWox7HlSHpbtwfcxzjag=
+			skQqqw5Ngh6oC8HBU7qKGbF5wuRz5zPMGNZkguZ8jcw=
 			</data>
 		</dict>
 		<key>Headers/STConfigMeasureHR.h</key>
@@ -202,11 +206,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			a+qQkydhmMWnwDPoG52j2eKKwk8=
+			KpEN5fbM1KeJcb7BtTsrGCawclA=
 			</data>
 			<key>hash2</key>
 			<data>
-			Bm+QDbZP+L19v2drPQ7z69hQTiMF9A3iTeylbReGp+A=
+			QbH0dS2aX/vOyqcEOs+26y/CB1lKLDQl9xg4AZ/ZA6w=
 			</data>
 		</dict>
 		<key>Headers/STHealthSwitch.h</key>
@@ -235,11 +239,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			/nSggxsb/MfJuXURypuz8Lt/geg=
+			5YtsoKyJCFD0aBDaRoI6alqbL5E=
 			</data>
 			<key>hash2</key>
 			<data>
-			IqwAqWcqGKXERc43HH74Biit4Gt+JlaXQrokIvQaSYE=
+			5v55il08faqVa5YfjaGE70cPoX6x3bk8JPniDw1Shl0=
 			</data>
 		</dict>
 		<key>Headers/STMessageNotice.h</key>
@@ -257,11 +261,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			4GozG5I/H75+HdYdPncJwlLsMe8=
+			YPE08eMl6zqDJjOeYNrzMh6tzM4=
 			</data>
 			<key>hash2</key>
 			<data>
-			l+JYkQbEnYOhz4Cm0dH0oLzwQ6+0qlYFoEu57YoA7SU=
+			bkWgmpXldyD4ekjqSvGEmkFP+oxkXy3s0U369eAJpfU=
 			</data>
 		</dict>
 		<key>Headers/STNoDisturb.h</key>
@@ -295,6 +299,17 @@
 			<key>hash2</key>
 			<data>
 			uj8V39+WU/BB7cR8DuPFWXFlOSvocvHkTJsjtlCayWE=
+			</data>
+		</dict>
+		<key>Headers/STSummerTime.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			cy2Vo2m4cydYwEDfIZnSiz4Aveo=
+			</data>
+			<key>hash2</key>
+			<data>
+			Gmqblk9TVxILO6F93ang9ayo2/PmMRjk9uuiuItqyxE=
 			</data>
 		</dict>
 		<key>Headers/STWeather.h</key>
@@ -334,11 +349,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Hp6IteiY8l+322/cIqdG8MAl4Wg=
+			sw+N1Gd0o+MaS96N95NMExm7Hk0=
 			</data>
 			<key>hash2</key>
 			<data>
-			jnyWdgIQAqfjTsoH90cGCAlWo54v65DShJTJ4qQ1b/Y=
+			nukvVRZFS5mPWETiJqhmolTdJfZ9o+oSeLWtXDwU2HU=
 			</data>
 		</dict>
 	</dict>
