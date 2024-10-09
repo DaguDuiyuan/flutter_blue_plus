@@ -798,7 +798,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         {
             NSDictionary *args = (NSDictionary*) call.arguments;
             NSString *type = args[@"type"];
-            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather", @"readStepAndSleepHistoryWithDate", @"readMetsHistoryWithDate", @"readTemperatureHistoryWithDate", @"readMaiHistoryWithDate", @"readSugarHistoryWithDate", @"writeDeviceState"];
+            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather", @"readStepAndSleepHistoryWithDate", @"readMetsHistoryWithDate", @"readTemperatureHistoryWithDate", @"readMaiHistoryWithDate", @"readSugarHistoryWithDate", @"writeDeviceState", @"readNewSleepHistoryWithDate"];
             
 //            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 //            [formatter setDateFormat:@"yyyyMMdd"];
@@ -907,56 +907,66 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     break;
                 case 11:
                 {
-                    // fixme 设置天气
+                    // 设置天气 fixme
                     NSMutableArray<STWeather *>*modelArr = NSMutableArray.new;
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < 8; i++) {
                         STWeather *model = STWeather.new;
-                        model.temp = @"31";
-                        model.tempMin = @"26";
+                        model.temp = @"-31";
+                        model.tempMin = @"-26";
                         model.tempMax = @"32";
-                        model.conditionCode = [self stmWeatherCodeTransform:200];
+                        model.conditionCode = [self stmWeatherCodeTransform:150];
                         model.unit = 0;
                         model.windSpeed = @"1";
                         model.humidity = @"2";
                         model.vis = @"30";
                         model.uvIndex = @"4";
                         model.AQI = @"1";
-                        
+
+                        model.sunrise = @"15:21";
+                        model.sunset = @"04:20";
+                        model.moonrise = @"15:21";
+                        model.moonset = @"04:20";
+
                         [modelArr addObject:model];
                     }
-                    result([STBlueToothSender writeWeather:modelArr]);
+                    result([STBlueToothSender writeWeatherCity:@"香港" ModelArr:modelArr]);
                 }
                     break;
                 case 12:
                 {
-                    // 根据日期同步记步/睡眠
+                    // 根据日期同步记步/睡眠 旧
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readStepAndSleepHistoryWithDate:dateStr]);
                 }
+                    break;
                 case 13:
                 {
                     // 根据日期同步梅脱
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readMetsHistoryWithDate:dateStr]);
                 }
+                    break;
                 case 14:
                 {
                     // 同步温度
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readTemperatureHistoryWithDate:dateStr]);
                 }
+                    break;
                 case 15:
                 {
                     // 根据日期同步Mai
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readMaiHistoryWithDate:dateStr]);
                 }
+                    break;
                 case 16:
                 {
                     // 根据日期同步血糖
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readSugarHistoryWithDate:dateStr]);
                 }
+                    break;
                 case 17:
                 {
                     NSNumber *timeMode = args[@"timeMode"];
@@ -976,6 +986,13 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     model.trunWrist = [trunWrist integerValue];///翻腕亮屏:开
                     
                     result([STBlueToothSender writeDeviceState:model]);
+                }
+                    break;
+                case 18:
+                {
+                    // 根据日期同步睡眠 新
+                    NSString *dateStr = args[@"dateStr"];
+                    result([STBlueToothSender readNewSleepHistoryWithDate:dateStr]);
                 }
                     break;
                 default:

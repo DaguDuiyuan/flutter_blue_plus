@@ -177,6 +177,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
           break;
         case 227: // 心率
         case 229: // 血氧
+        case 244: // 睡眠
         case 230: // 压力
           // 判断是否为空
           if (json['object'].keys.isEmpty) {
@@ -496,17 +497,33 @@ class _DeviceScreenState extends State<DeviceScreen> {
               },
             )),
         ListTile(
-            title: const Text('获取步数'),
+            title: const Text('获取步数、睡眠（旧）'),
             trailing: IconButton(
               icon: const Icon(Icons.send),
               onPressed: () async {
-                Snackbar.show(ABC.c, "接入中", success: false);
-                // var res = await FlutterBluePlus.starMaxSender('writeFindDevice');
-                // _request(res);
+                var res =
+                await FlutterBluePlus.starMaxSenderArgs({
+                  'type':'readStepAndSleepHistoryWithDate',
+                  'dateStr':'20240930'
+                });
+                _request(res);
               },
             )),
         ListTile(
-            title: const Text('推送天气（FIXME）'),
+            title: const Text('获取睡眠（新）'),
+            trailing: IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () async {
+                var res =
+                await FlutterBluePlus.starMaxSenderArgs({
+                  'type':'readNewSleepHistoryWithDate',
+                  'dateStr':'20241009'
+                });
+                _request(res);
+              },
+            )),
+        ListTile(
+            title: const Text('推送天气'),
             trailing: IconButton(
               icon: const Icon(Icons.send),
               onPressed: () async {
