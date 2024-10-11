@@ -798,7 +798,7 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
         {
             NSDictionary *args = (NSDictionary*) call.arguments;
             NSString *type = args[@"type"];
-            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather", @"readStepAndSleepHistoryWithDate", @"readMetsHistoryWithDate", @"readTemperatureHistoryWithDate", @"readMaiHistoryWithDate", @"readSugarHistoryWithDate", @"writeDeviceState", @"readNewSleepHistoryWithDate"];
+            NSArray *items = @[@"readDeviceState", @"writeFindDevice", @"readDeviceBattery", @"writeDeviceBind", @"readHeartRateHistoryWithDate", @"readBloodPressureHistoryWithDate", @"readBloodOxygenHistoryWithDate", @"readPhysicalPressureHistoryWithDate", @"readHistoryValidDate", @"writeDeviceDateTime", @"readDeviceDateTime", @"writeWeather", @"readStepAndSleepHistoryWithDate", @"readMetsHistoryWithDate", @"readTemperatureHistoryWithDate", @"readMaiHistoryWithDate", @"readSugarHistoryWithDate", @"writeDeviceState", @"readNewSleepHistoryWithDate", @"writeDeviceHealthMeasure"];
             
 //            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 //            [formatter setDateFormat:@"yyyyMMdd"];
@@ -993,6 +993,13 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
                     // 根据日期同步睡眠 新
                     NSString *dateStr = args[@"dateStr"];
                     result([STBlueToothSender readNewSleepHistoryWithDate:dateStr]);
+                }
+                    break;
+                case 19:
+                {
+                    // 健康测量（压力）
+                    Byte Id = 0x66;
+                    result([STBlueToothSender writeDeviceHealthMeasure:Id On:YES]);
                 }
                     break;
                 default:

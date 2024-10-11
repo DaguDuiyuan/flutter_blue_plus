@@ -531,6 +531,15 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 _request(res);
               },
             )),
+        ListTile(
+            title: const Text('压力测量'),
+            trailing: IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () async {
+                var res = await FlutterBluePlus.starMaxSender('writeDeviceHealthMeasure');
+                _request(res);
+              },
+            )),
       ],
     );
   }
